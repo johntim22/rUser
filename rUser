@@ -1,0 +1,165 @@
+clear
+echo "******************************"
+echo "*     WELCOME TO rUSER       *"
+echo "******************************"
+echo " "
+echo Please select a funtion:
+echo "1) Check user activity and generate script"
+echo "2) Execute the generated script"
+echo "3) Terminate rUser"
+echo " "
+read -p "Please enter the number of your choice --> " choice_num
+if [ $choice_num == 3 ] #code for third choice
+then
+	echo "Exiting rUser..."
+	sleep 5
+	clear
+elif [ $choice_num == 1 ] #code for first choice
+then
+	clear
+	echo "You chose to: Check user activity and generate script"
+	echo "Please enter the username of the user who will recieve the report. Press <ENTER> when you are done."
+	read  uss1
+	echo "Please wait as rUser is searching for ${uss1}..."
+	sleep 2
+	flag=1 #we create a boolean flag to help us in the loop
+	#echo $flag
+	while [ $flag == 1 ] 
+	do
+		if [ -d /home/"${uss1}" ] #checks if user exists
+		then
+			flag=0
+			#echo $flag
+			echo "User ${uss1} exists. Report will be created!"
+			sleep 2
+			mkdir script_path
+			clear
+			echo "A directory named <script_path> has been created under this working directory, as you can see below:"
+			ls -l 
+			echo "A text file with your user name as title also has been created and placed in that folder."
+			cd script_path
+			> $(whoami).txt #creating the file with the name of the user running the script
+			echo "Processes of user: $(whoami)" >> $(whoami).txt
+			ps -u $(whoami) >> $(whoami).txt
+			sleep 5
+			if [ -f rMail ] #checks if file exists
+			then
+				clear
+				echo "File rMail already exists on your computer. Would you like to replace it?"
+				echo "1) Yes"
+				echo "2) No"
+				echo " "
+				read -p "Please enter the number of your choice --> " choice12
+				if [ $choice12 == 1 ] 
+				then
+					clear
+					cd script_path
+					>rMail #creates and replaces rMail file
+					echo "File rMail has been replaced!"
+					ls -l
+					sleep 5
+				elif [ $choice12 == 2 ] 
+				then
+					read -p "Please enter a unique name for your file --> " namefilenew
+					while [ $namefilenew == "rMail" ]
+					do
+						clear
+						echo "The name of the file must not be rMail"
+						read -p "Please enter again a unique name for your file --> "
+					done
+					>"$namefilenew"
+					clear
+					echo "A file $namefilenew was created,as you can see below!"
+					ls -l
+					sleep 5
+				else
+					echo "You typed a non valid input. Program will restart..."
+					sleep 3
+					cd ..
+					./rUser
+				fi
+			else
+				#pwd
+				#cd script_path
+				>rMail
+				echo "A file named rMail created successfully as well and placed in the new folder!"
+				#ls -l 
+				sleep 5
+			fi
+			pwd
+			clear
+			echo "Please wait..."
+			echo "rUser will continue in just a few moments!"
+			sleep 5
+			clear
+			echo "rUser will now generate an executable script within the rMail file."
+			sleep 2
+			echo "rUser generates rMail. Please wait..."
+			sleep 5
+			#rMail generation starts here
+			echo "echo "**Welcome to rMail**"" >> rMail
+			echo "if [ -f $(whoami).txt ] " >> rMail
+			echo "	then " >> rMail
+			echo "		mail -s "My_Activity_Report" $uss1 < $(whoami).txt " >> rMail  #mail to be sent commands
+			echo "		echo "Mail has been sent successfully! Thank you for using rMail!" " >> rMail
+			echo "		sleep 3 " >> rMail
+			echo "		echo "Exiting rMail..." " >> rMail
+			echo "		sleep 5 " >> rMail
+			echo "	else " >> rMail
+			echo "		echo "ERROR: The required attachment file was not found!" " >> rMail
+			echo "		echo "Please try to run again rMail and choose option 1" " >> rMail
+			echo "		sleep 3 " >> rMail
+			echo "		echo "Exiting rMail..." " >>rMail
+			echo "	fi	" >>rMail
+			echo "cd .." >>rMail
+			echo "./rUser">>rMail
+			chmod 755 rMail
+			clear
+			echo "rMail script has been successfully generated."
+			echo "To execute the script run rUser again and select option 2."
+		else
+			echo "User ${uss1} does not exist. Please check your entry!"
+			sleep 3
+			clear
+			echo "Please enter again the username of the user who will recieve the report. Press <ENTER> when you are done."
+			read uss1
+			echo "Please wait as rUser is searching for ${uss1}..."
+			sleep 2
+		fi
+	done
+elif [ $choice_num == 2 ] #code for second choice
+then
+	clear
+	echo "You chose to: Execute the generated script"
+	read -p "Press <ENTER> to continue" enterkey
+	sleep 2
+	clear
+	uss2=$(whoami)
+	#echo $uss2
+	if [ -d /home/${uss2}/COURSEWORK/script_path ] 
+	then
+		ls -l
+		sleep 2
+		cd script_path
+		ls -l
+		sleep 2
+		clear
+		if [ -f rMail ] 
+		then
+			echo "File rMail exists and it will be executed automatically!"
+			sleep 2
+			clear
+			./rMail
+		else
+			echo "File rMail does not exist. Please run rUser again and select option 1."
+		fi
+	else
+		echo "The required by the script directory does not exist. Please run rUser again and select option 1."
+	fi
+else #code for any other case
+	echo "You typed a non valid command! "
+	sleep 2 
+	clear
+	./rUser
+fi
+	
